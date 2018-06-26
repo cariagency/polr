@@ -99,7 +99,7 @@ class LinkController extends Controller {
             ClickHelper::recordClick($link, $request);
         }
         // Redirect to final destination
-        return redirect()->to($long_url, 301);
+        return redirect()->to($long_url, 301)->header('Cache-Control', 'private, max-age=90');
     }
 
 }
