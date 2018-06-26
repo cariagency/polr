@@ -22,6 +22,8 @@ $app = new Laravel\Lumen\Application(
 $app->withFacades();
 $app->withEloquent();
 
+class_alias('Laravel\Socialite\Facades\Socialite', 'Socialite');
+
 $app->configure('geoip');
 
 /*
@@ -82,6 +84,8 @@ $app->routeMiddleware([
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(\Yajra\Datatables\DatatablesServiceProvider::class);
 $app->register(\Torann\GeoIP\GeoIPServiceProvider::class);
+$app->register(App\Providers\EventServiceProvider::class);
+$app->register(SocialiteProviders\Manager\ServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
 /*

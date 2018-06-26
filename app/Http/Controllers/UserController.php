@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use Mail;
 use Hash;
+use Socialite;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,12 @@ class UserController extends Controller {
      * @return Response
      */
     public function displayLoginPage(Request $request) {
-        return view('login');
+
+        if (env('SOCIALITE_PROVIDER')) {
+            return Socialite::driver(env('SOCIALITE_PROVIDER'))->redirect();
+        } else {
+            return view('login');
+        }
     }
 
     public function displaySignupPage(Request $request) {
@@ -31,6 +37,33 @@ class UserController extends Controller {
     public function performLogoutUser(Request $request) {
         $request->session()->forget('username');
         $request->session()->forget('role');
+        return redirect()->route('index');
+    }
+
+    public function performSocialiteLogin(Request $request) {
+        $socialUser = Socialite::driver(env('SOCIALITE_PROVIDER'))->user();
+
+        $user = UserHelper::getUserByEmail($socialUser->email);
+
+        // unexisting user, let's create it
+        if (!$user) {
+
+            $api_active = false;
+            $api_key = null;
+
+            if (env('SETTING_AUTO_API')) {
+                // if automatic API key assignment is on
+                $api_active = 1;
+                $api_key = CryptoHelper::generateRandomHex(env('_API_KEY_LENGTH'));
+            }
+
+            $user = UserFactory::createUser($socialUser->email, $socialUser->email, '', TRUE, $request->ip(), $api_key, $api_active);
+
+        }
+
+        $request->session()->put('username', $user->username);
+        $request->session()->put('role', $user->role);
+
         return redirect()->route('index');
     }
 

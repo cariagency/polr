@@ -17,6 +17,7 @@ if (env('POLR_ALLOW_ACCT_CREATION')) {
 $app->get('/', ['as' => 'index', 'uses' => 'IndexController@showIndexPage']);
 $app->get('/logout', ['as' => 'logout', 'uses' => 'UserController@performLogoutUser']);
 $app->get('/login', ['as' => 'login', 'uses' => 'UserController@displayLoginPage']);
+$app->get('/login/callback', ['as' => 'loginCallback', 'uses' => 'UserController@performSocialiteLogin']);
 $app->get('/about-polr', ['as' => 'about', 'uses' => 'StaticPageController@displayAbout']);
 
 $app->get('/lost_password', ['as' => 'lost_password', 'uses' => 'UserController@displayLostPasswordPage']);

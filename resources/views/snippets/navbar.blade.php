@@ -36,6 +36,9 @@
                 @endif
 
                 <li class="dropdown">
+                    @if (env('SOCIALITE_PROVIDER'))
+                    <a href="{{route('login')}}">Sign In <strong class="caret"></strong></a>
+                    @else
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
                     <div class="dropdown-menu pull-right login-dropdown-menu" id="dropdown">
                         <h2>Login</h2>
@@ -46,6 +49,7 @@
                             <input class="btn btn-success form-control login-form-submit" type="submit" name="login" value="Sign In" />
                         </form>
                     </div>
+                    @endif
                 </li>
             @else
                 <div class='nav pull-right navbar-nav'>
@@ -53,7 +57,9 @@
                     <a class="dropdown-toggle login-name" href="#" data-toggle="dropdown">{{session('username')}} <strong class="caret"></strong></a>
                         <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu">
                             <li><a tabindex="-1" href="{{ route('admin') }}">Dashboard</a></li>
+                            @if (!env('SOCIALITE_PROVIDER'))
                             <li><a tabindex="-1" href="{{ route('admin') }}#settings">Settings</a></li>
+                            @endif
                             <li><a tabindex="-1" href="{{ route('logout') }}">Logout</a></li>
                         </ul>
                     </li>

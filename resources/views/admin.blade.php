@@ -11,7 +11,9 @@
         <ul class='nav nav-pills nav-stacked admin-nav' role='tablist'>
             <li role='presentation' aria-controls="home" class='admin-nav-item active'><a href='#home'>Home</a></li>
             <li role='presentation' aria-controls="links" class='admin-nav-item'><a href='#links'>Links</a></li>
+            @if (!env('SOCIALITE_PROVIDER'))
             <li role='presentation' aria-controls="settings" class='admin-nav-item'><a href='#settings'>Settings</a></li>
+            @endif
 
             @if ($role == $admin_role)
             <li role='presentation' class='admin-nav-item'><a href='#admin'>Admin</a></li>
@@ -35,6 +37,7 @@
                 ])
             </div>
 
+            @if (!env('SOCIALITE_PROVIDER'))
             <div role="tabpanel" class="tab-pane" id="settings">
                 <h3>Change Password</h3>
                 <form action='/admin/action/change_password' method='POST'>
@@ -44,6 +47,7 @@
                     <input type='submit' class='btn btn-success change-password-btn'/>
                 </form>
             </div>
+            @endif
 
             @if ($role == $admin_role)
             <div role="tabpanel" class="tab-pane" id="admin">
