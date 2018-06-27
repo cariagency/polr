@@ -134,11 +134,13 @@ class ApiAnalyticsController extends ApiController {
                 catch (\Exception $e) {
                     throw new ApiException('ANALYTICS_ERROR', $e->getMessage(), 400, $response_type);
                 }
-                $data[] = [
-                    'url_ending' => $link->short_url,
-                    'long_url' => $link->long_url,
-                    'data' => $stats->$stats_function(),
-                ];
+                if ($fetched_stats = $stats->$stats_function()) {
+                    $data[] = [
+                        'url_ending' => $link->short_url,
+                        'long_url' => $link->long_url,
+                        'data' => $fetched_stats,
+                    ];
+                }
             }
         }
 
