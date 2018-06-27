@@ -13,7 +13,14 @@ class ClickHelper {
     static private function getHost($url) {
         // Return host given URL; NULL if host is
         // not found.
-        return parse_url($url, PHP_URL_HOST);
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!$host) return $host;
+        if (substr($host, 0, 4) == 'www.') $host = substr($host, 4);
+        $known_domains = ['facebook.com', 'twitter.com', 'instagram.com', 'linkedin.com', 'youtube.com', 'pinterest.com', 'tumblr.com', 'reddit.com', 'qq.com', 'baidu.com', 'weibo.com', 'yy.com', 'vk.com', 'badoo.com'];
+        foreach($known_domains as $domain) {
+            if (preg_match('/'.preg_quote($domain).'$/', $host)) return $domain;
+        }
+        return $host;
     }
 
     static public function recordClick(Link $link, Request $request) {
