@@ -51,6 +51,29 @@ class LinkHelper {
         }
     }
 
+    static public function searchLinksByLongUrl($keywords) {
+        /**
+         * Provided a match (array or string),
+         * return the links objects matching the long url, or false.
+         * @return Link model instance
+         */
+
+        if (!is_array($keywords)) $keywords = [$keywords];
+
+        $query = Link::query();
+        foreach($keywords as $keyword) {
+            $query->orWhere('long_url', 'LIKE', '%'.$keyword.'%');
+        }
+        $links = $query->get();
+
+        if ($links != null) {
+            return $links;
+        }
+        else {
+            return false;
+        }
+    }
+
     static public function longLinkExists($long_url, $username=false) {
         /**
          * Provided a long link (string),
