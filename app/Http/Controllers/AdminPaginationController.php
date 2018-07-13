@@ -6,6 +6,7 @@ use Yajra\Datatables\Facades\Datatables;
 use App\Models\Link;
 use App\Models\User;
 use App\Helpers\UserHelper;
+use App\Helpers\LinkHelper;
 
 class AdminPaginationController extends Controller {
     /**
@@ -30,6 +31,10 @@ class AdminPaginationController extends Controller {
         else {
             return $link->clicks;
         }
+    }
+
+    public function renderTagsCell($link) {
+        return LinkHelper::getTags($link->id)->implode(', ');
     }
 
     public function renderDeleteUserCell($user) {
@@ -141,8 +146,9 @@ class AdminPaginationController extends Controller {
     public function paginateAdminLinks(Request $request) {
         self::ensureAdmin();
 
-        $admin_links = Link::select(['short_url', 'long_url', 'clicks', 'created_at', 'creator', 'is_disabled']);
+        $admin_links = Link::select(['id', 'short_url', 'long_url', 'clicks', 'created_at', 'creator', 'is_disabled']);
         return Datatables::of($admin_links)
+            ->addColumn('tags', [$this, 'renderTagsCell'])
             ->addColumn('disable', [$this, 'renderToggleLinkActiveCell'])
             ->addColumn('delete', [$this, 'renderDeleteLinkCell'])
             ->editColumn('clicks', [$this, 'renderClicksCell'])
@@ -159,6 +165,7 @@ class AdminPaginationController extends Controller {
             ->select(['id', 'short_url', 'long_url', 'clicks', 'created_at']);
 
         return Datatables::of($user_links)
+            ->addColumn('tags', [$this, 'renderTagsCell'])
             ->editColumn('clicks', [$this, 'renderClicksCell'])
             ->editColumn('long_url', [$this, 'renderLongUrlCell'])
             ->escapeColumns(['short_url'])

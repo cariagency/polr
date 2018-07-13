@@ -1,6 +1,7 @@
 @extends('layouts.base')
 
 @section('css')
+<link rel='stylesheet' href='css/jquery.tag-editor.css' />
 <link rel='stylesheet' href='css/index.css' />
 @endsection
 
@@ -10,6 +11,9 @@
 <form method='POST' action='/shorten' role='form'>
     <input type='url' autocomplete='off'
         class='form-control long-link-input' placeholder='http://' name='link-url' />
+
+    <input type='text' name='link-tags' autocomplete='off'
+        class='form-control long-link-input' placeholder='Tags' />
 
     <div class='row' id='options' ng-cloak>
         <p>Customize link</p>
@@ -48,5 +52,7 @@
 @endsection
 
 @section('js')
+<script src='js/jquery.caret.min.js'></script>
+<script src='js/jquery.tag-editor.min.js'></script>
 <script src='js/index.js'></script>
 @endsection

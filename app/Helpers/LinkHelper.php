@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers;
+use App\Models\Tag;
 use App\Models\Link;
 use App\Helpers\BaseHelper;
 
@@ -164,5 +165,16 @@ class LinkHelper {
         }
 
         return $base_x_val;
+    }
+
+    public static function assignTagsByShortUrl($short_url, $tags) {
+        $link = LinkHelper::linkExists($short_url);
+        foreach($tags as $tag) {
+            Tag::create(['link_id' => $link->id, 'tag' => $tag]);
+        }
+    }
+
+    public static function getTags($link_id) {
+        return Tag::where('link_id', $link_id)->get()->pluck('tag');
     }
 }

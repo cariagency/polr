@@ -156,6 +156,7 @@ polr.controller('AdminCtrl', function($scope, $compile, $timeout) {
                     {className: 'wrap-text', data: 'long_url', name: 'long_url'},
                     {data: 'clicks', name: 'clicks'},
                     {data: 'created_at', name: 'created_at'},
+                    {data: 'tags', name: 'tags'},
                     {data: 'creator', name: 'creator'},
 
                     {data: 'disable', name: 'disable', orderable: false, searchable: false},
@@ -172,7 +173,8 @@ polr.controller('AdminCtrl', function($scope, $compile, $timeout) {
                 {className: 'wrap-text', data: 'short_url', name: 'short_url'},
                 {className: 'wrap-text', data: 'long_url', name: 'long_url'},
                 {data: 'clicks', name: 'clicks'},
-                {data: 'created_at', name: 'created_at'}
+                {data: 'created_at', name: 'created_at'},
+                {data: 'tags', name: 'tags'}
             ]
         }, datatables_config));
     };

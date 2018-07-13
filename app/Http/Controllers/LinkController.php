@@ -36,9 +36,13 @@ class LinkController extends Controller {
         $is_secret = ($request->input('options') == "s" ? true : false);
         $creator = session('username');
         $link_ip = $request->ip();
+        $tags = explode(',', $request->input('link-tags'));
 
         try {
             $short_url = LinkFactory::createLink($long_url, $is_secret, $custom_ending, $link_ip, $creator);
+            if ($short_url && $tags) {
+                LinkHelper::assignTagsByShortUrl(basename($short_url), $tags);
+            }
         }
         catch (\Exception $e) {
             return self::renderError($e->getMessage());

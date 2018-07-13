@@ -91,4 +91,7 @@ $(function() {
         $(this).find('.btn').toggleClass('btn-default');
 
     });
+
+    $('input[name="link-tags"]').tagEditor({placeholder: 'Tags'});
+
 });

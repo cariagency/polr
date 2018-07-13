@@ -12,8 +12,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
-            'SocialiteProviders\\Okta\\OktaExtendSocialite@handle',
-        ],
     ];
+
+    function __construct($app) {
+        parent::__construct($app);
+        if (env('SOCIALITE_PROVIDER')) {
+            $this->listen[\SocialiteProviders\Manager\SocialiteWasCalled::class] = 'SocialiteProviders\\Okta\\OktaExtendSocialite@handle';
+        }
+    }
 }
