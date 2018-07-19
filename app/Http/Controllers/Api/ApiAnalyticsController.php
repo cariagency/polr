@@ -89,10 +89,11 @@ class ApiAnalyticsController extends ApiController {
         }
 
         $validator = \Validator::make($request->all(), [
-            'search' => 'required',
+            'search' => 'required_without:tags',
             'stats_type' => 'alpha_num',
             'left_bound' => 'date',
-            'right_bound' => 'date'
+            'right_bound' => 'date',
+            'tags' => 'required_without:search'
         ]);
 
         if ($validator->fails()) {
@@ -100,6 +101,7 @@ class ApiAnalyticsController extends ApiController {
         }
 
         $keywords = explode(',', $request->input('search'));
+        $tags = explode(',', $request->input('tags'));
         $stats_type = $request->input('stats_type');
         $left_bound = $request->input('left_bound');
         $right_bound = $request->input('right_bound');
@@ -118,7 +120,11 @@ class ApiAnalyticsController extends ApiController {
             throw new ApiException('INVALID_ANALYTICS_TYPE', 'Invalid analytics type requested.', 400, $response_type);
         }
 
-        $links = LinkHelper::searchLinksByLongUrl($keywords);
+        if ($keywords && !$tags) {
+            $links = LinkHelper::searchLinksByLongUrl($keywords);
+        } else {
+            $links = LinkHelper::getLinksByTags($tags);
+        }
         if ($links === false) {
             throw new ApiException('NOT_FOUND', 'Nothing found.', 404, $response_type);
         }

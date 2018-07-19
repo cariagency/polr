@@ -75,6 +75,37 @@ class LinkHelper {
         }
     }
 
+    static public function getLinksByTag($tag) {
+        /**
+         * Provided a match (array or string),
+         * return the links objects matching the tag, or false.
+         * @return Link model instance
+         */
+
+        return self::getLinksByTags([$tag]);
+    }
+
+    static public function getLinksByTags($tags) {
+        /**
+         * Provided a match (array or string),
+         * return the links objects matching the tags, or false.
+         * @return Link model instance
+         */
+
+        if (!is_array($tags)) $tags = [$tags];
+
+        $links = Link::whereHas('tags', function ($query) use ($tags) {
+            $query->whereIn('tag', $tags);
+        })->get();
+
+        if ($links != null) {
+            return $links;
+        }
+        else {
+            return false;
+        }
+    }
+
     static public function longLinkExists($long_url, $username=false) {
         /**
          * Provided a long link (string),

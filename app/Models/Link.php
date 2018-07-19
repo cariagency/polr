@@ -27,4 +27,10 @@ class Link extends Model {
             ->where('long_url_hash', $crc32_hash)
             ->where('long_url', $long_url);
     }
+
+    public function tags()
+    {
+        return $this->hasMany('App\Models\Tag');
+    }
+
 }
