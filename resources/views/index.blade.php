@@ -1,6 +1,7 @@
 @extends('layouts.base')
 
 @section('css')
+<link rel='stylesheet' href='css/jquery-ui-autocomplete.css' />
 <link rel='stylesheet' href='css/jquery.tag-editor.css' />
 <link rel='stylesheet' href='css/index.css' />
 @endsection
@@ -52,7 +53,11 @@
 @endsection
 
 @section('js')
+<script>
+    availableTags = <?php echo json_encode($tags); ?>;
+</script>
 <script src='js/jquery.caret.min.js'></script>
+<script src='js/jquery-ui-autocomplete.min.js'></script>
 <script src='js/jquery.tag-editor.min.js'></script>
 <script src='js/index.js'></script>
 @endsection

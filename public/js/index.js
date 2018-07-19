@@ -92,6 +92,6 @@ $(function() {
 
     });
 
-    $('input[name="link-tags"]').tagEditor({placeholder: 'Tags'});
+    $('input[name="link-tags"]').tagEditor({placeholder: 'Tags', autocomplete: { 'source': availableTags, minLength: 0 } });
 
 });
