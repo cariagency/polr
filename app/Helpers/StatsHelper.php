@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Helpers;
-use App\Models\Click;
-use App\Models\Link;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Click;
+use App\Models\Link;
+use App\Models\Tag;
 
 class StatsHelper {
+
     function __construct($link_id, $left_bound, $right_bound) {
         $this->link_id = $link_id;
         $this->left_bound_parsed = Carbon::parse($left_bound);
@@ -28,19 +31,18 @@ class StatsHelper {
 
     public function getBaseRows() {
         /**
-        * Fetches base rows given left date bound, right date bound, and link id
-        *
-        * @param integer $link_id
-        * @param string $left_bound
-        * @param string $right_bound
-        *
-        * @return DB rows
-        */
-
+         * Fetches base rows given left date bound, right date bound, and link id
+         *
+         * @param integer $link_id
+         * @param string $left_bound
+         * @param string $right_bound
+         *
+         * @return DB rows
+         */
         return DB::table('clicks')
-            ->where('link_id', $this->link_id)
-            ->where('created_at', '>=', $this->left_bound_parsed)
-            ->where('created_at', '<=', $this->right_bound_parsed);
+                        ->where('link_id', $this->link_id)
+                        ->where('created_at', '>=', $this->left_bound_parsed)
+                        ->where('created_at', '<=', $this->right_bound_parsed);
     }
 
     public function getDayStats() {
@@ -48,32 +50,65 @@ class StatsHelper {
         // date => x
         // clicks => y
         $stats = $this->getBaseRows()
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') AS x, count(*) AS y"))
-            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d')"))
-            ->orderBy('x', 'asc')
-            ->get();
+                ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') AS x, count(*) AS y"))
+                ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d')"))
+                ->orderBy('x', 'asc')
+                ->get();
 
         return $stats;
     }
 
     public function getCountryStats() {
         $stats = $this->getBaseRows()
-            ->select(DB::raw("country AS label, count(*) AS clicks"))
-            ->groupBy('country')
-            ->orderBy('clicks', 'desc')
-            ->whereNotNull('country')
-            ->get();
+                ->select(DB::raw("country AS label, count(*) AS clicks"))
+                ->groupBy('country')
+                ->orderBy('clicks', 'desc')
+                ->whereNotNull('country')
+                ->get();
 
         return $stats;
     }
 
     public function getRefererStats() {
         $stats = $this->getBaseRows()
-            ->select(DB::raw("COALESCE(referer_host, 'Direct') as label, count(*) as clicks"))
-            ->groupBy('referer_host')
-            ->orderBy('clicks', 'desc')
-            ->get();
+                ->select(DB::raw("COALESCE(referer_host, 'Direct') as label, count(*) as clicks"))
+                ->groupBy('referer_host')
+                ->orderBy('clicks', 'desc')
+                ->get();
 
         return $stats;
     }
+
+    public function getTagStats($tag) {
+        $total = DB::table('tags')
+                ->join('links', 'tags.link_id', '=', 'links.id')
+                ->join('clicks', 'clicks.link_id', '=', 'links.id')
+                ->select('tags.tag', DB::raw('COUNT(clicks.id) as clicks'))
+                ->where('clicks.created_at', '>=', $this->left_bound_parsed)
+                ->where('clicks.created_at', '<=', $this->right_bound_parsed)
+                ->where('tags.tag', $tag)
+                ->count();
+
+        $tags = DB::table('tags')
+                ->join('links', 'tags.link_id', '=', 'links.id')
+                ->join('clicks', 'clicks.link_id', '=', 'links.id')
+                ->select('tags.tag', DB::raw('COUNT(clicks.id) as clicks'))
+                ->whereIn('links.id', Tag::where('tag', $tag)->get()->pluck('link_id'))
+                ->where('clicks.created_at', '>=', $this->left_bound_parsed)
+                ->where('clicks.created_at', '<=', $this->right_bound_parsed)
+                ->where('tags.tag', '!=', $tag)
+                ->groupBy('tags.tag')
+                ->orderBy('tags.tag')
+                ->get();
+
+        $details = [];
+        foreach ($tags as $t) {
+            $details[$t->tag] = $t->clicks;
+        }
+        
+        arsort($details);
+
+        return ['total' => $total, 'details' => $details];
+    }
+
 }
