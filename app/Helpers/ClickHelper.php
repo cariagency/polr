@@ -40,6 +40,9 @@ class ClickHelper {
         $click->referer = $referer;
         $click->referer_host = ClickHelper::getHost($referer);
         $click->user_agent = $request->server('HTTP_USER_AGENT');
+        if (empty($click->referer_host) && $click->user_agent) {
+            if (preg_match('/(FBAN|FBAV)/', $click->user_agent)) $click->referer_host = 'facebook.com';
+        }
         $click->save();
 
         return true;

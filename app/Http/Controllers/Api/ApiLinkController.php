@@ -7,10 +7,15 @@ use App\Helpers\LinkHelper;
 use App\Exceptions\Api\ApiException;
 
 class ApiLinkController extends ApiController {
-    protected function getShortenedLink($long_url, $is_secret, $custom_ending, $link_ip, $username, $response_type) {
+    protected function getShortenedLink($long_url, $is_secret, $custom_ending, $tags, $link_ip, $username, $response_type) {
         try {
             $formatted_link = LinkFactory::createLink(
                 $long_url, $is_secret, $custom_ending, $link_ip, $username, false, true);
+
+            if ($formatted_link && $tags) {
+                LinkHelper::assignTagsByShortUrl(basename($formatted_link), $tags);
+            }
+
         }
         catch (\Exception $e) {
             throw new ApiException('CREATION_ERROR', $e->getMessage(), 400, $response_type);
@@ -37,6 +42,7 @@ class ApiLinkController extends ApiController {
             $request->input('url'),
             ($request->input('is_secret') == 'true' ? true : false),
             $request->input('custom_ending'),
+            explode(',', $request->input('tags')),
             $request->ip(),
             $user->username,
             $response_type
@@ -82,6 +88,7 @@ class ApiLinkController extends ApiController {
                 $link['url'],
                 (array_get($link, 'is_secret') == 'true' ? true : false),
                 array_get($link, 'custom_ending'),
+                [],
                 $link_ip,
                 $username,
                 $response_type
