@@ -191,4 +191,40 @@ class ApiAnalyticsController extends ApiController {
         return self::encodeResponse($data, 'data_links_' . $stats_type, $response_type, false);
     }
 
+    public function lookupTagLinksStats(Request $request) {
+        $user = $request->user;
+        $response_type = $request->input('response_type') ?: 'json';
+
+        if ($user->anonymous) {
+            throw new ApiException('AUTH_ERROR', 'Anonymous access of this API is not permitted.', 401, $response_type);
+        }
+
+        if ($response_type != 'json') {
+            throw new ApiException('JSON_ONLY', 'Only JSON-encoded data is available for this endpoint.', 401, $response_type);
+        }
+
+        $validator = \Validator::make($request->all(), ['tag' => 'required']);
+        if ($validator->fails()) {
+            throw new ApiException('MISSING_PARAMETERS', 'Invalid or missing parameters.', 400, $response_type);
+        }
+
+        $tag = $request->input('tag');
+        if (!TagHelper::tagExists($tag)) {
+            throw new ApiException('NOT_FOUND', 'Tag not found.', 404, $response_type);
+        }
+
+        if (!TagHelper::userHasTag($user, $tag)) {
+            // If user does not own tag and is not an admin
+            throw new ApiException('ACCESS_DENIED', 'Unauthorized.', 401, $response_type);
+        }
+
+        try {
+            $data = TagHelper::getTagLinks($tag);
+        } catch (\Exception $e) {
+            throw new ApiException('ANALYTICS_ERROR', $e->getMessage(), 400, $response_type);
+        }
+
+        return self::encodeResponse(['tag' => $tag, 'data' => $data], "data_tag_{$tag}_links_stats", $response_type, false);
+    }
+
 }

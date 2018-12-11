@@ -78,4 +78,5 @@ $app->group(['prefix' => '/api/v2', 'namespace' => 'App\Http\Controllers\Api', '
     $app->post('data/link', ['as' => 'api_link_analytics', 'uses' => 'ApiAnalyticsController@lookupLinkStats']);
     $app->get('data/links', ['as' => 'api_links_analytics', 'uses' => 'ApiAnalyticsController@lookupLinksStats']);
     $app->get('data/tag', ['as' => 'api_tag_analytics', 'uses' => 'ApiAnalyticsController@lookupTagStats']);
+    $app->get('data/tag/links', ['as' => 'api_tag_links_analytics', 'uses' => 'ApiAnalyticsController@lookupTagLinksStats']);
 });
