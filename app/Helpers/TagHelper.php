@@ -54,7 +54,7 @@ class TagHelper {
             $tmp[$t->link_id][] = $t->tag;
         }
         foreach ($links as &$l) {
-            $l->tags = isset($tmp[$l->id]) ? $tmp[$l->id] : [];
+            $l->tags = isset($tmp[$l->id]) ? array_unique($tmp[$l->id]) : [];
         }
 
         // Sort by clicks desc.
