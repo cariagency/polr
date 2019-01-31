@@ -32,7 +32,7 @@ class TagHelper {
 
         // Get tag's links and clicks.
         $links = DB::table('links')
-                ->join('clicks', 'clicks.link_id', '=', 'links.id')
+                ->leftJoin('clicks', 'clicks.link_id', '=', 'links.id')
                 ->select('links.id', 'links.short_url', 'links.long_url', DB::raw('COUNT(clicks.id) as clicks'))
                 ->whereIn('links.id', $ids)
                 ->groupBy('links.short_url', 'links.long_url')
